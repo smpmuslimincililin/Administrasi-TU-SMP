@@ -62,8 +62,8 @@ echo  ========================================
 echo         DEPLOYMENT SUCCESS!
 echo  ========================================
 echo.
-echo  GitHub: https://github.com/[USERNAME-LO]/[NAMA-REPO-TU-SMP]
-echo  Website: https://[NAMA-PROJECT-TU-SMP].vercel.app/
+echo  GitHub: https://github.com/smpmuslimincililin/Administrasi-TU-SMP
+echo  Website: https://administrasi-tu-smp.vercel.app/
 echo.
 echo  Vercel will auto-deploy in 1-2 minutes.
 echo.

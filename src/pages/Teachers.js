@@ -15,19 +15,29 @@ export const Teachers = () => {
     try {
       setIsLoading(true);
 
-      // ✅ UPDATE: Include both teacher AND guru_bk roles
+      // ✅ UPDATE: Include teacher, guru_bk, tu, dan petugas_perpus (Data Guru & Staf)
       const { data: guruData, error: guruError } = await supabase
         .from("users")
         .select("id, teacher_id, full_name, is_active, homeroom_class_id, role")
-        .in("role", ["teacher", "guru_bk"]); // ✅ Include guru_bk
+        .in("role", ["teacher", "guru_bk", "tu", "petugas_perpus"]); // ✅ Include tu & petugas_perpus
 
       if (guruError) throw guruError;
 
-      // Sort berdasarkan kode guru secara numerik (ekstrak angka dari teacher_id)
+      // Urutan: Guru & BK -> Staf TU -> Petugas Perpustakaan (Kepala Sekolah selalu di paling atas, ditambahkan terpisah di bawah)
+      const rolePriority = { teacher: 1, guru_bk: 1, tu: 2, petugas_perpus: 3 };
+
       const sortedGuruData = guruData.sort((a, b) => {
+        const groupA = rolePriority[a.role] ?? 99;
+        const groupB = rolePriority[b.role] ?? 99;
+        if (groupA !== groupB) return groupA - groupB;
+
+        // Dalam grup yang sama, urutkan berdasarkan kode guru secara numerik
         const numA = parseInt(a.teacher_id?.replace(/\D/g, "") || "0");
         const numB = parseInt(b.teacher_id?.replace(/\D/g, "") || "0");
-        return numA - numB;
+        if (numA !== numB) return numA - numB;
+
+        // Kalau kode guru sama-sama kosong (Staf TU / Petugas Perpus), urutkan alfabetis
+        return (a.full_name || "").localeCompare(b.full_name || "");
       });
 
       // Ambil data mapel dari teacher_assignments
@@ -49,6 +59,12 @@ export const Teachers = () => {
         } else if (guru.role === "guru_bk") {
           // GURU BK/BP
           tugasMapel = ["GURU BK/BP"];
+        } else if (guru.role === "tu") {
+          // Staff TU
+          tugasMapel = ["Staff TU"];
+        } else if (guru.role === "petugas_perpus") {
+          // Petugas Perpustakaan
+          tugasMapel = ["Petugas Perpustakaan"];
         } else {
           // Guru biasa - ambil dari teacher_assignments
           const mapelGuru = mapelData
@@ -109,7 +125,7 @@ export const Teachers = () => {
       <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-300">
-            Data Guru
+            Data Guru dan Staf
           </h1>
           <p className="text-sm sm:text-base text-slate-600 dark:text-gray-300 transition-colors duration-300">
             Memuat data guru...
@@ -132,10 +148,10 @@ export const Teachers = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-2 transition-colors duration-300">
-              Data Guru
+              Data Guru dan Staf
             </h1>
             <p className="text-sm sm:text-base text-slate-600 dark:text-gray-300 transition-colors duration-300">
-              Manajemen Data Guru SMP Muslimin Cililin
+              Manajemen Data Guru dan Staf SMP Muslimin Cililin
             </p>
           </div>
 
@@ -171,14 +187,14 @@ export const Teachers = () => {
       {/* ---------------------------------------------------- */}
       {/* 🚀 LAYOUT MOBILE-FIRST (Card View) - Default/HP/Kecil */}
       {/* ---------------------------------------------------- */}
-      <div className="sm:hidden space-y-3">
+      <div className="sm:hidden space-y-2">
         {guruData.length > 0 ? (
           guruData.map((guru, index) => (
             <div
               key={guru.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg shadow-blue-100/50 dark:shadow-gray-900/50 p-4 border border-blue-100 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-gray-900 transition-all duration-300 touch-manipulation">
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg shadow-blue-100/50 dark:shadow-gray-900/50 p-3 border border-blue-100 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-gray-900 transition-all duration-300 touch-manipulation">
               {/* Header Card */}
-              <div className="flex justify-between items-start border-b border-blue-100/70 dark:border-gray-700 pb-3 mb-3">
+              <div className="flex justify-between items-start border-b border-blue-100/70 dark:border-gray-700 pb-2 mb-2">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                     No. {index + 1} | Kode:{" "}
@@ -205,7 +221,7 @@ export const Teachers = () => {
               </div>
 
               {/* Body Card */}
-              <div className="space-y-2 text-sm sm:text-base">
+              <div className="space-y-1.5 text-sm sm:text-base">
                 <div className="flex justify-between items-start">
                   <span className="text-slate-500 dark:text-gray-400 font-medium w-2/5">
                     Tugas/Mapel:
@@ -262,22 +278,22 @@ export const Teachers = () => {
               {/* Table Header */}
               <thead className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-gray-700 dark:to-gray-600">
                 <tr>
-                  <th className="w-12 sm:w-16 px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
+                  <th className="w-12 sm:w-16 px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
                     No.
                   </th>
-                  <th className="w-24 sm:w-32 px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
+                  <th className="w-24 sm:w-32 px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
                     Kode Guru
                   </th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider">
+                  <th className="px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider">
                     Nama Guru
                   </th>
-                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider w-1/3">
+                  <th className="px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider w-1/3">
                     Tugas/Mapel
                   </th>
-                  <th className="w-28 sm:w-32 px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
+                  <th className="w-28 sm:w-32 px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
                     Wali Kelas
                   </th>
-                  <th className="w-20 sm:w-24 px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
+                  <th className="w-20 sm:w-24 px-3 sm:px-6 py-1.5 sm:py-2 text-left text-xs sm:text-sm font-semibold text-white uppercase tracking-wider text-center">
                     Status
                   </th>
                 </tr>
@@ -289,26 +305,26 @@ export const Teachers = () => {
                     key={guru.id}
                     className="hover:bg-blue-50/50 dark:hover:bg-gray-700/50 transition-colors duration-300">
                     {/* Nomor */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-slate-500 dark:text-gray-400 text-center font-medium">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2 whitespace-nowrap text-xs sm:text-sm text-slate-500 dark:text-gray-400 text-center font-medium">
                       {index + 1}
                     </td>
 
                     {/* Kode Guru */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2 whitespace-nowrap text-center">
                       <div className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">
                         {guru.teacher_id || "-"}
                       </div>
                     </td>
 
                     {/* Nama Guru */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2 whitespace-nowrap">
                       <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                         {guru.full_name}
                       </div>
                     </td>
 
                     {/* Tugas/Mapel */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2">
                       {guru.mapel?.length > 0 ? (
                         <div className="text-xs sm:text-sm text-slate-900 dark:text-gray-200 font-medium">
                           {guru.mapel.join(", ")}
@@ -321,7 +337,7 @@ export const Teachers = () => {
                     </td>
 
                     {/* Wali Kelas */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2 whitespace-nowrap text-center">
                       {guru.walikelas !== "-" ? (
                         <div className="text-xs sm:text-sm text-slate-900 dark:text-white font-medium">
                           KELAS {guru.walikelas}
@@ -334,7 +350,7 @@ export const Teachers = () => {
                     </td>
 
                     {/* Status */}
-                    <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center">
+                    <td className="px-3 sm:px-6 py-1.5 sm:py-2 whitespace-nowrap text-center">
                       {guru.is_active ? (
                         <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
                           Aktif
@@ -373,7 +389,7 @@ export const Teachers = () => {
               <span className="font-bold text-blue-600 dark:text-blue-400">
                 {guruData.length}
               </span>{" "}
-              guru
+              Guru & Staf
             </span>
             <span className="font-medium">
               Aktif:{" "}

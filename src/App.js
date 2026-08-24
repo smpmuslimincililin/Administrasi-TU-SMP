@@ -33,6 +33,16 @@ import PerpusMain from "./perpustakaan/PerpusMain";
 // ========== HELPER FUNCTIONS FOR ROLE CHECK ==========
 
 /**
+ * Role yang punya akses penuh setara admin (Kepala TU, Staff TU, Kasek, Waka Kurikulum)
+ */
+const FULL_ACCESS_ROLES = ["admin", "tu", "kasek", "waka_kurikulum"];
+
+/**
+ * Role yang di-lock total dari TU app — sudah punya aplikasi guru sendiri
+ */
+const LOCKED_ROLES = ["teacher", "guru_bk"];
+
+/**
  * Check if user is Wali Kelas
  * Wali Kelas = teacher dengan homeroom_class_id tidak null
  */
@@ -273,6 +283,55 @@ const ProtectedRoute = ({
 
   if (maintenanceMode && (userRole === "admin" || isWhitelisted)) {
     console.log(`✅ User ${user?.username} BYPASSED maintenance (${userRole})`);
+  }
+
+  // 🔒 LOCKED ROLES CHECK — teacher & guru_bk gak boleh akses TU app sama sekali
+  // Fitur mereka sudah dipindah ke aplikasi guru terpisah (administrasi-smp-muslimin)
+  if (LOCKED_ROLES.includes(userRole)) {
+    console.log(
+      `🔴 User ${user.username} (role: ${userRole}) di-lock dari TU app`,
+    );
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors duration-300 p-4 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 to-gray-800"
+            : "bg-gradient-to-br from-blue-50 to-indigo-100"
+        }`}>
+        <div className="text-center max-w-md mx-auto">
+          <div
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-colors ${
+              darkMode ? "bg-red-900/30" : "bg-red-100"
+            }`}>
+            <svg
+              className={`w-7 h-7 sm:w-8 sm:h-8 ${darkMode ? "text-red-400" : "text-red-600"}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m0 0v2m0-2h2m-2 0H9m3-9a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+          <h2
+            className={`text-lg sm:text-xl font-bold mb-2 transition-colors ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}>
+            Aplikasi Ini Khusus TU
+          </h2>
+          <p
+            className={`text-sm sm:text-base mb-4 sm:mb-6 transition-colors ${
+              darkMode ? "text-gray-400" : "text-gray-600"
+            }`}>
+            Silakan gunakan aplikasi guru untuk mengakses fitur presensi, nilai,
+            dan jurnal Anda.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // Role-based access check
@@ -746,7 +805,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <AttendanceMain
                   user={user}
@@ -766,7 +826,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["teacher", "guru_bk", "admin", "tu"]}>
+              allowedRoles={[...FULL_ACCESS_ROLES, "petugas_perpus"]}>
               <LayoutWrapper>
                 <TeacherAttendance
                   user={user}
@@ -786,7 +846,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <GradeMain
                   user={user}
@@ -806,7 +867,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["admin"]}>
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <AttendanceManagement
                   user={user}
@@ -827,7 +888,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["admin", "petugas_perpus"]}>
+              allowedRoles={[...FULL_ACCESS_ROLES, "petugas_perpus"]}>
               <LayoutWrapper>
                 <PerpusMain
                   currentPage="katalog-buku"
@@ -848,7 +909,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["admin", "petugas_perpus"]}>
+              allowedRoles={[...FULL_ACCESS_ROLES, "petugas_perpus"]}>
               <LayoutWrapper>
                 <PerpusMain
                   currentPage="peminjaman"
@@ -869,7 +930,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["admin", "petugas_perpus"]}>
+              allowedRoles={[...FULL_ACCESS_ROLES, "petugas_perpus"]}>
               <LayoutWrapper>
                 <PerpusMain
                   currentPage="pengembalian"
@@ -889,7 +950,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <Reports
                   user={user}
@@ -908,7 +970,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <SPMB
                   user={user}
@@ -927,7 +990,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <Setting
                   user={user}
@@ -947,7 +1011,8 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}>
+              onShowToast={handleShowToast}
+              allowedRoles={FULL_ACCESS_ROLES}>
               <LayoutWrapper>
                 <MonitorSistem
                   user={user}

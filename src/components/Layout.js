@@ -244,7 +244,7 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
       "/classes": "Data Kelas",
       "/attendance": "Kehadiran",
       "/attendance-management": "Management Presensi",
-      "/attendance-teacher": "Presensi Guru",
+      "/attendance-teacher": "Presensi Guru & Staf",
       "/nilai-siswa": "Nilai Siswa", // 🚨 PERUBAHAN: dari "Nilai Asli" & "Nilai Katrol"
       "/reports": "Laporan",
 
@@ -277,7 +277,7 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
         "Data Kelas": "Kelola Data Kelas Sekolah",
         Kehadiran: "Kelola Kehadiran Siswa",
         "Management Presensi": "Edit, Ubah Tanggal, atau Hapus Data Presensi",
-        "Presensi Guru": "Kelola Presensi dan Absensi Guru",
+        "Presensi Guru & Staf": "Kelola Presensi dan Absensi Guru",
         "Nilai Siswa":
           "Kelola Nilai Akademik Siswa (Input Nilai & Nilai Katrol)", // 🚨 PERUBAHAN
         Laporan: "Generate dan Kelola Laporan",
@@ -292,12 +292,49 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
         Pengaturan: "Pengaturan Sistem Sekolah",
         "Monitor Sistem": "Pemeriksaan Kesehatan Sistem dan Integritas Data",
       },
+      // Kasek & Waka Kurikulum: akses penuh setara admin
+      kasek: {
+        Dashboard: "Kelola Semua Data Sekolah",
+        "Data Siswa": "Kelola Data Siswa Sekolah",
+        "Data Guru": "Kelola Data Guru Sekolah",
+        "Data Kelas": "Kelola Data Kelas Sekolah",
+        Kehadiran: "Kelola Kehadiran Siswa",
+        "Management Presensi": "Edit, Ubah Tanggal, atau Hapus Data Presensi",
+        "Presensi Guru & Staf": "Monitoring Presensi dan Absensi Guru",
+        "Nilai Siswa":
+          "Kelola Nilai Akademik Siswa (Input Nilai & Nilai Katrol)",
+        Laporan: "Generate dan Kelola Laporan",
+        "Katalog Buku": "Kelola Katalog Buku Perpustakaan",
+        Peminjaman: "Kelola Peminjaman Buku",
+        Pengembalian: "Kelola Pengembalian Buku",
+        SPMB: "Seleksi Penerimaan Murid Baru",
+        Pengaturan: "Pengaturan Sistem Sekolah",
+        "Monitor Sistem": "Pemeriksaan Kesehatan Sistem dan Integritas Data",
+      },
+      waka_kurikulum: {
+        Dashboard: "Kelola Semua Data Sekolah",
+        "Data Siswa": "Kelola Data Siswa Sekolah",
+        "Data Guru": "Kelola Data Guru Sekolah",
+        "Data Kelas": "Kelola Data Kelas Sekolah",
+        Kehadiran: "Kelola Kehadiran Siswa",
+        "Management Presensi": "Edit, Ubah Tanggal, atau Hapus Data Presensi",
+        "Presensi Guru & Staf": "Monitoring Presensi dan Absensi Guru",
+        "Nilai Siswa":
+          "Kelola Nilai Akademik Siswa (Input Nilai & Nilai Katrol)",
+        Laporan: "Generate dan Kelola Laporan",
+        "Katalog Buku": "Kelola Katalog Buku Perpustakaan",
+        Peminjaman: "Kelola Peminjaman Buku",
+        Pengembalian: "Kelola Pengembalian Buku",
+        SPMB: "Seleksi Penerimaan Murid Baru",
+        Pengaturan: "Pengaturan Sistem Sekolah",
+        "Monitor Sistem": "Pemeriksaan Kesehatan Sistem dan Integritas Data",
+      },
       guru_bk: {
         // Menu Utama & Akademik untuk Guru BK
         Dashboard: "Dashboard Bimbingan Konseling",
         "Data Siswa": "Lihat Data Siswa Sekolah",
         "Data Guru": "Lihat Data Guru Sekolah",
-        "Presensi Guru": "Lihat Presensi Guru Sekolah",
+        "Presensi Guru & Staf": "Lihat Presensi Guru Sekolah",
         Laporan: "Laporan BK/BP",
       },
       tu: {
@@ -306,7 +343,7 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
         "Data Siswa": "Kelola Data Siswa Sekolah",
         "Data Guru": "Kelola Data Guru dan Staf Sekolah",
         "Data Kelas": "Kelola Data Kelas Sekolah",
-        "Presensi Guru": "Kelola Presensi dan Absensi Guru",
+        "Presensi Guru & Staf": "Kelola Presensi dan Absensi Guru",
         Kehadiran: "Kelola Kehadiran Siswa",
         "Nilai Siswa": "Kelola Nilai Akademik Siswa",
         Laporan: "Generate dan Kelola Laporan",
@@ -315,6 +352,10 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
       petugas_perpus: {
         // Menu untuk Petugas Perpustakaan
         Dashboard: "Dashboard Perpustakaan",
+        "Data Siswa": "Lihat Data Siswa Sekolah",
+        "Data Guru": "Lihat Data Guru dan Staf Sekolah",
+        "Data Kelas": "Lihat Data Kelas Sekolah",
+        "Presensi Guru & Staf": "Input Kehadiran Guru dan Staf",
         "Katalog Buku": "Kelola Katalog Buku Perpustakaan",
         Peminjaman: "Catat dan Kelola Peminjaman Buku",
         Pengembalian: "Catat dan Kelola Pengembalian Buku",
@@ -328,7 +369,7 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
             "Data Kelas": `Informasi Kelas`,
             Kehadiran: `Input Kehadiran Siswa`,
             "Management Presensi": "Kelola Data Presensi yang Sudah Diinput",
-            "Presensi Guru": "Input Kehadiran Guru",
+            "Presensi Guru & Staf": "Input Kehadiran Guru",
             "Nilai Siswa": `Input Nilai Akademik (Asli & Katrol) Kelas ${homeroom_class_id}`, // 🚨 PERUBAHAN
             Laporan: `Laporan Kelas`,
             Pengaturan: "Pengaturan Akun",
@@ -341,7 +382,7 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
             "Data Kelas": "Lihat informasi kelas",
             Kehadiran: "Input kehadiran mata pelajaran",
             "Management Presensi": "Kelola Data Presensi Mata Pelajaran",
-            "Presensi Guru": "Input Presensi dan Absensi Guru",
+            "Presensi Guru & Staf": "Input Presensi dan Absensi Guru",
             "Nilai Siswa":
               "Input nilai akademik (asli & katrol) mata pelajaran", // 🚨 PERUBAHAN
             Laporan: "Laporan mata pelajaran",
@@ -383,7 +424,10 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
 
       if (!path) return;
 
-      if (path === "/attendance-management" && user?.role !== "admin") {
+      if (
+        path === "/attendance-management" &&
+        !["admin", "tu", "kasek", "waka_kurikulum"].includes(user?.role)
+      ) {
         navigate("/dashboard");
         return;
       }
@@ -691,18 +735,22 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
                           }`}>
                           {user?.role === "admin"
                             ? "Administrator"
-                            : user?.role === "guru_bk"
-                              ? "Guru BK/BP"
-                              : user?.role === "teacher" &&
-                                  user?.homeroom_class_id
-                                ? `Wali Kelas ${user.homeroom_class_id}`
-                                : user?.role === "teacher"
-                                  ? "Guru Mata Pelajaran"
-                                  : user?.role === "tu"
-                                    ? "Staff TU"
-                                    : user?.role === "petugas_perpus"
-                                      ? "Petugas Perpustakaan"
-                                      : "User"}
+                            : user?.role === "kasek"
+                              ? "Kepala Sekolah"
+                              : user?.role === "waka_kurikulum"
+                                ? "Waka Kurikulum"
+                                : user?.role === "guru_bk"
+                                  ? "Guru BK/BP"
+                                  : user?.role === "teacher" &&
+                                      user?.homeroom_class_id
+                                    ? `Wali Kelas ${user.homeroom_class_id}`
+                                    : user?.role === "teacher"
+                                      ? "Guru Mata Pelajaran"
+                                      : user?.role === "tu"
+                                        ? "Staff TU"
+                                        : user?.role === "petugas_perpus"
+                                          ? "Petugas Perpustakaan"
+                                          : "User"}
                         </p>
                         {user?.teacher_id && (
                           <p
@@ -729,7 +777,9 @@ const Layout = ({ user, onLogout, children, darkMode, onToggleDarkMode }) => {
                           <span className="font-medium">Profile</span>
                         </button>
 
-                        {user?.role === "admin" && (
+                        {["admin", "tu", "kasek", "waka_kurikulum"].includes(
+                          user?.role,
+                        ) && (
                           <button
                             onClick={() => {
                               handleNavigate("settings");

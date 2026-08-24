@@ -25,22 +25,31 @@ const Sidebar = ({
   const isTeacher = userRole === "teacher";
   const isTU = userRole === "tu";
   const isPetugasPerpus = userRole === "petugas_perpus";
+  const isKasek = userRole === "kasek";
+  const isWakaKurikulum = userRole === "waka_kurikulum";
+
+  // Role dengan akses penuh setara admin: Kepala TU, Staff TU, Kasek, Waka Kurikulum
+  const hasFullAccess = isAdmin || isTU || isKasek || isWakaKurikulum;
 
   const fullName = userData.full_name || "User";
   const roleName =
     userRole === "admin"
       ? "Administrator"
-      : userRole === "guru_bk"
-        ? "Guru BK"
-        : isWaliKelas
-          ? `Wali Kelas ${userData.homeroom_class_name || ""}`
-          : userRole === "teacher"
-            ? "Guru"
-            : userRole === "tu"
-              ? "Staff TU"
-              : userRole === "petugas_perpus"
-                ? "Petugas Perpustakaan"
-                : "Pengguna";
+      : userRole === "kasek"
+        ? "Kepala Sekolah"
+        : userRole === "waka_kurikulum"
+          ? "Waka Kurikulum"
+          : userRole === "guru_bk"
+            ? "Guru BK"
+            : isWaliKelas
+              ? `Wali Kelas ${userData.homeroom_class_name || ""}`
+              : userRole === "teacher"
+                ? "Guru"
+                : userRole === "tu"
+                  ? "Staff TU"
+                  : userRole === "petugas_perpus"
+                    ? "Petugas Perpustakaan"
+                    : "Pengguna";
 
   const getInitials = (name) => {
     const words = name
@@ -295,17 +304,9 @@ const Sidebar = ({
                 <span className="flex-1 text-sm">Data Siswa</span>
               )}
             </a>
-          </div>
 
-          {/* ========== AKADEMIK ========== */}
-          <div className="mb-4 sm:mb-5">
-            {!isCollapsed && (
-              <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">
-                AKADEMIK
-              </div>
-            )}
-            {/* ✓ Presensi Guru */}
-            {(isAdmin || isTeacher || isGuruBK || isTU) && (
+            {/* ✓ Presensi Guru & Staf — khusus ditampilkan di sini buat Petugas Perpus biar gak membingungkan */}
+            {isPetugasPerpus && (
               <a
                 href="#attendance-teacher"
                 className={`
@@ -322,7 +323,7 @@ const Sidebar = ({
                   e.preventDefault();
                   handleMenuClick("attendance-teacher");
                 }}
-                title={isCollapsed ? "Presensi Guru" : ""}>
+                title={isCollapsed ? "Presensi Guru & Staf" : ""}>
                 <svg
                   className="w-5 h-5 flex-shrink-0"
                   fill="none"
@@ -336,12 +337,57 @@ const Sidebar = ({
                   />
                 </svg>
                 {!isCollapsed && (
-                  <span className="flex-1 text-sm">Presensi Guru</span>
+                  <span className="flex-1 text-sm">Presensi Guru & Staf</span>
                 )}
               </a>
             )}
-            {/* ✓ Presensi Siswa - guru_bk diaktifkan kembali */}
-            {(isAdmin || isTeacher || isGuruBK || isTU) && (
+          </div>
+
+          {/* ========== AKADEMIK ========== */}
+          <div className="mb-4 sm:mb-5">
+            {!isCollapsed && (
+              <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">
+                AKADEMIK
+              </div>
+            )}
+            {/* ✓ Presensi Guru & Staf — Petugas Perpus dipindah ke Master Data, jadi di sini cuma FULL_ACCESS_ROLES */}
+            {hasFullAccess && (
+              <a
+                href="#attendance-teacher"
+                className={`
+                  flex items-center gap-3 px-4 sm:px-6 py-2.5 text-white dark:text-gray-200 font-medium transition-all duration-200 cursor-pointer hover:bg-blue-800 dark:hover:bg-gray-800 rounded-r-full mr-4
+                  touch-manipulation min-h-[44px]
+                  ${isCollapsed ? "justify-center" : ""}
+                  ${
+                    currentPage === "attendance-teacher"
+                      ? "bg-blue-800 dark:bg-gray-800 border-r-4 border-blue-400 dark:border-blue-500 font-semibold text-blue-100 dark:text-gray-100"
+                      : "hover:text-blue-100 dark:hover:text-gray-100"
+                  }
+                `}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleMenuClick("attendance-teacher");
+                }}
+                title={isCollapsed ? "Presensi Guru & Staf" : ""}>
+                <svg
+                  className="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                {!isCollapsed && (
+                  <span className="flex-1 text-sm">Presensi Guru & Staf</span>
+                )}
+              </a>
+            )}
+            {/* ✓ Presensi Siswa */}
+            {hasFullAccess && (
               <a
                 href="#attendance"
                 className={`
@@ -377,8 +423,8 @@ const Sidebar = ({
               </a>
             )}
 
-            {/* ✓ Nilai Siswa - guru_bk diaktifkan kembali */}
-            {(isAdmin || isTeacher || isGuruBK || isTU) && (
+            {/* ✓ Nilai Siswa */}
+            {hasFullAccess && (
               <a
                 href="#nilai-siswa"
                 className={`
@@ -413,8 +459,8 @@ const Sidebar = ({
                 )}
               </a>
             )}
-            {/* 📊 Laporan - guru_bk diaktifkan kembali */}
-            {(isAdmin || isWaliKelas || isTeacher || isGuruBK || isTU) && (
+            {/* 📊 Laporan */}
+            {hasFullAccess && (
               <a
                 href="#reports"
                 className={`
@@ -452,7 +498,7 @@ const Sidebar = ({
           </div>
 
           {/* ========== PERPUSTAKAAN ========== */}
-          {(isAdmin || isPetugasPerpus) && (
+          {(hasFullAccess || isPetugasPerpus) && (
             <div className="mb-4 sm:mb-5">
               {!isCollapsed && (
                 <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">
@@ -567,8 +613,8 @@ const Sidebar = ({
             </div>
           )}
 
-          {/* ========== SISTEM (ADMIN & TU) ========== */}
-          {(isAdmin || isTU) && (
+          {/* ========== SISTEM (FULL ACCESS ROLES) ========== */}
+          {hasFullAccess && (
             <div className="mb-4">
               {!isCollapsed && (
                 <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">

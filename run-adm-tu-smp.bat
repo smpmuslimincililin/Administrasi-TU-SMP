@@ -19,12 +19,12 @@ if not exist "package.json" (
     exit
 )
 
-echo [*] Menjalankan npm run dev...
+echo [*] Menjalankan npm start...
 echo.
 echo ================================================
 echo.
 
-npm run dev
+npm start
 
 echo.
 echo ================================================

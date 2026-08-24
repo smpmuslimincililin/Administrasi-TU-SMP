@@ -13,12 +13,9 @@ import Students from "./pages/Students";
 import AttendanceMain from "./pages/attendance/AttendanceMain";
 import AttendanceManagement from "./pages/attendance/AttendanceManagement";
 import GradeMain from "./pages/grades/GradeMain";
-import TeacherSchedule from "./pages/TeacherSchedule";
-import CatatanSiswa from "./pages/CatatanSiswa";
 import Setting from "./setting/Setting";
 
 // Import modules
-import Konseling from "./konseling/Konseling";
 import Reports from "./reports/Reports";
 import SPMB from "./spmb/SPMB";
 import MonitorSistem from "./system/MonitorSistem";
@@ -30,23 +27,8 @@ import MaintenancePage from "./setting/MaintenancePage";
 // Import Presensi Guru
 import TeacherAttendance from "./attendance-teacher/TeacherAttendance";
 
-// Import Jurnal Harian Mengajar
-import JurnalHarian from "./pages/JurnalHarian";
-import AdminJurnalRekap from "./components/AdminJurnalRekap";
-
-// Import E-RAPORT modules - DIUPDATE SESUAI DOKUMENTASI
-import DashboardAdmin from "./e-raport/DashboardAdmin";
-import DashboardTeacher from "./e-raport/DashboardTeacher";
-import DashboardHomeroomTeacher from "./e-raport/DashboardHomeroomTeacher";
-import InputTP from "./e-raport/InputTP";
-import InputNilai from "./e-raport/InputNilai";
-import InputKehadiran from "./e-raport/InputKehadiran";
-import InputCatatan from "./e-raport/InputCatatan";
-import InputKokurikuler from "./e-raport/InputKokurikuler"; // 🆕 TAMBAH INI
-import InputEkstrakurikuler from "./e-raport/InputEkstrakurikuler"; // 🆕 TAMBAH INI
-import CekStatusNilai from "./e-raport/CekStatusNilai";
-import CekNilai from "./e-raport/CekNilai";
-import RaportPage from "./e-raport/RaportPage";
+// Import Perpustakaan
+import PerpusMain from "./perpustakaan/PerpusMain";
 
 // ========== HELPER FUNCTIONS FOR ROLE CHECK ==========
 
@@ -154,7 +136,11 @@ const ProtectedRoute = ({
         const { data, error } = await supabase
           .from("school_settings")
           .select("setting_key, setting_value")
-          .in("setting_key", ["maintenance_mode", "maintenance_message", "maintenance_whitelist"]);
+          .in("setting_key", [
+            "maintenance_mode",
+            "maintenance_message",
+            "maintenance_whitelist",
+          ]);
 
         if (error) {
           console.error("❌ Error checking maintenance:", error);
@@ -168,12 +154,13 @@ const ProtectedRoute = ({
         });
 
         const isMaintenance =
-          settings.maintenance_mode === "true" || settings.maintenance_mode === true;
+          settings.maintenance_mode === "true" ||
+          settings.maintenance_mode === true;
 
         setMaintenanceMode(isMaintenance);
         setMaintenanceMessage(
           settings.maintenance_message ||
-            "Aplikasi sedang dalam maintenance. Kami akan kembali segera!"
+            "Aplikasi sedang dalam maintenance. Kami akan kembali segera!",
         );
 
         if (settings.maintenance_whitelist) {
@@ -209,12 +196,13 @@ const ProtectedRoute = ({
           event: "*",
           schema: "public",
           table: "school_settings",
-          filter: "setting_key=in.(maintenance_mode,maintenance_message,maintenance_whitelist)",
+          filter:
+            "setting_key=in.(maintenance_mode,maintenance_message,maintenance_whitelist)",
         },
         () => {
           console.log("🔔 Maintenance setting changed");
           checkMaintenance();
-        }
+        },
       )
       .subscribe();
 
@@ -243,19 +231,16 @@ const ProtectedRoute = ({
           darkMode
             ? "bg-gradient-to-br from-gray-900 to-gray-800"
             : "bg-gradient-to-br from-blue-50 to-indigo-100"
-        }`}
-      >
+        }`}>
         <div className="text-center">
           <div
             className={`animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-4 mx-auto mb-3 sm:mb-4 transition-colors ${
               darkMode ? "border-blue-400" : "border-blue-600"
-            }`}
-          ></div>
+            }`}></div>
           <p
             className={`text-sm sm:text-base font-medium transition-colors ${
               darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
+            }`}>
             Checking session...
           </p>
         </div>
@@ -299,20 +284,17 @@ const ProtectedRoute = ({
           darkMode
             ? "bg-gradient-to-br from-gray-900 to-gray-800"
             : "bg-gradient-to-br from-blue-50 to-indigo-100"
-        }`}
-      >
+        }`}>
         <div className="text-center max-w-md mx-auto">
           <div
             className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-colors ${
               darkMode ? "bg-red-900/30" : "bg-red-100"
-            }`}
-          >
+            }`}>
             <svg
               className={`w-7 h-7 sm:w-8 sm:h-8 ${darkMode ? "text-red-400" : "text-red-600"}`}
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -324,15 +306,13 @@ const ProtectedRoute = ({
           <h2
             className={`text-lg sm:text-xl font-bold mb-2 transition-colors ${
               darkMode ? "text-white" : "text-gray-900"
-            }`}
-          >
+            }`}>
             Akses Ditolak
           </h2>
           <p
             className={`text-sm sm:text-base mb-4 sm:mb-6 transition-colors ${
               darkMode ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
+            }`}>
             Anda tidak memiliki izin untuk mengakses halaman ini.
           </p>
           <button
@@ -341,8 +321,7 @@ const ProtectedRoute = ({
               darkMode
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
+            }`}>
             Kembali ke Dashboard
           </button>
         </div>
@@ -370,22 +349,19 @@ const ProtectedRoute = ({
           darkMode
             ? "bg-gradient-to-br from-gray-900 to-gray-800"
             : "bg-gradient-to-br from-blue-50 to-indigo-100"
-        }`}
-      >
+        }`}>
         <div className="text-center max-w-md mx-auto">
           <div
             className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-colors ${
               darkMode ? "bg-yellow-900/30" : "bg-yellow-100"
-            }`}
-          >
+            }`}>
             <svg
               className={`w-7 h-7 sm:w-8 sm:h-8 ${
                 darkMode ? "text-yellow-400" : "text-yellow-600"
               }`}
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -397,29 +373,29 @@ const ProtectedRoute = ({
           <h2
             className={`text-lg sm:text-xl font-bold mb-2 transition-colors ${
               darkMode ? "text-white" : "text-gray-900"
-            }`}
-          >
+            }`}>
             Akses Khusus Wali Kelas
           </h2>
           <p
             className={`text-sm sm:text-base mb-4 sm:mb-6 transition-colors ${
               darkMode ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
+            }`}>
             Halaman ini hanya dapat diakses oleh Wali Kelas atau Admin.
-            {userFullData?.role === "teacher" && userFullData?.homeroom_class_id === null && (
-              <span className="block mt-2 text-xs italic">(Status Anda: Guru Mapel)</span>
-            )}
+            {userFullData?.role === "teacher" &&
+              userFullData?.homeroom_class_id === null && (
+                <span className="block mt-2 text-xs italic">
+                  (Status Anda: Guru Mapel)
+                </span>
+              )}
           </p>
           <button
-            onClick={() => (window.location.href = "/era-dashboard-teacher")}
+            onClick={() => (window.location.href = "/dashboard")}
             className={`w-full sm:w-auto px-6 py-2.5 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation active:scale-95 ${
               darkMode
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
-            Kembali ke Dashboard Guru
+            }`}>
+            Kembali ke Dashboard
           </button>
         </div>
       </div>
@@ -480,7 +456,10 @@ function App() {
             localStorage.removeItem("user");
             localStorage.removeItem("rememberMe");
             setUser(null);
-            handleShowToast("Sesi Anda telah berakhir. Silakan login kembali.", "warning");
+            handleShowToast(
+              "Sesi Anda telah berakhir. Silakan login kembali.",
+              "warning",
+            );
             setLoading(false);
             return;
           }
@@ -591,12 +570,11 @@ function App() {
         user={user}
         onLogout={handleLogout}
         darkMode={darkMode}
-        onToggleDarkMode={handleToggleDarkMode}
-      >
+        onToggleDarkMode={handleToggleDarkMode}>
         {children}
       </Layout>
     ),
-    [user, handleLogout, darkMode, handleToggleDarkMode]
+    [user, handleLogout, darkMode, handleToggleDarkMode],
   );
 
   // ========== 6. RENDER ADMIN PANEL ==========
@@ -607,10 +585,12 @@ function App() {
         future={{
           v7_startTransition: true,
           v7_relativeSplatPath: true,
-        }}
-      >
+        }}>
         <Routes>
-          <Route path="/secret-admin-panel-2024" element={<AdminPanel darkMode={darkMode} />} />
+          <Route
+            path="/secret-admin-panel-2024"
+            element={<AdminPanel darkMode={darkMode} />}
+          />
         </Routes>
       </BrowserRouter>
     );
@@ -624,19 +604,16 @@ function App() {
           darkMode
             ? "bg-gradient-to-br from-gray-900 to-gray-800"
             : "bg-gradient-to-br from-blue-50 to-indigo-100"
-        }`}
-      >
+        }`}>
         <div className="text-center">
           <div
             className={`animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-4 mx-auto mb-3 sm:mb-4 transition-colors ${
               darkMode ? "border-blue-400" : "border-blue-600"
-            }`}
-          ></div>
+            }`}></div>
           <p
             className={`text-sm sm:text-base font-medium transition-colors ${
               darkMode ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
+            }`}>
             Loading...
           </p>
         </div>
@@ -649,8 +626,7 @@ function App() {
       future={{
         v7_startTransition: true,
         v7_relativeSplatPath: true,
-      }}
-    >
+      }}>
       {/* ✅ Toast Notification dengan Dark Mode & Responsive */}
       {showToast && (
         <div className={getToastStyle()}>
@@ -661,7 +637,9 @@ function App() {
               {toastType === "warning" && "⚠️"}
               {toastType === "info" && "ℹ️"}
             </span>
-            <span className="font-medium text-sm sm:text-base break-words">{toastMessage}</span>
+            <span className="font-medium text-sm sm:text-base break-words">
+              {toastMessage}
+            </span>
           </div>
         </div>
       )}
@@ -692,10 +670,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <Dashboard user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <Dashboard
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -708,10 +689,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <Teachers user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <Teachers
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -724,10 +708,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <Classes user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <Classes
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -740,10 +727,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <Students user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <Students
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -756,10 +746,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <AttendanceMain user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <AttendanceMain
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -773,48 +766,13 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["teacher", "guru_bk", "admin"]}
-            >
+              allowedRoles={["teacher", "guru_bk", "admin", "tu"]}>
               <LayoutWrapper>
-                <TeacherAttendance user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ========== JURNAL HARIAN MENGAJAR ========== */}
-
-        {/* Jurnal Harian - GURU isi jurnal mengajar */}
-        <Route
-          path="/jurnal-harian"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher", "guru_bk"]}
-            >
-              <LayoutWrapper>
-                <JurnalHarian user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Rekap Jurnal Harian - ADMIN lihat semua jurnal guru */}
-        <Route
-          path="/jurnal-harian-rekap"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin"]}
-            >
-              <LayoutWrapper>
-                <AdminJurnalRekap user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <TeacherAttendance
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -828,10 +786,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <GradeMain user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <GradeMain
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -845,8 +806,7 @@ function App() {
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-              allowedRoles={["admin"]}
-            >
+              allowedRoles={["admin"]}>
               <LayoutWrapper>
                 <AttendanceManagement
                   user={user}
@@ -858,49 +818,65 @@ function App() {
           }
         />
 
+        {/* ========== PERPUSTAKAAN ========== */}
         <Route
-          path="/jadwal-saya"
+          path="/katalog-buku"
           element={
             <ProtectedRoute
               user={user}
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-            >
+              allowedRoles={["admin", "petugas_perpus"]}>
               <LayoutWrapper>
-                <TeacherSchedule user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <PerpusMain
+                  currentPage="katalog-buku"
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/catatan-siswa"
+          path="/peminjaman"
           element={
             <ProtectedRoute
               user={user}
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-            >
+              allowedRoles={["admin", "petugas_perpus"]}>
               <LayoutWrapper>
-                <CatatanSiswa user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <PerpusMain
+                  currentPage="peminjaman"
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/konseling"
+          path="/pengembalian"
           element={
             <ProtectedRoute
               user={user}
               loading={loading}
               darkMode={darkMode}
               onShowToast={handleShowToast}
-            >
+              allowedRoles={["admin", "petugas_perpus"]}>
               <LayoutWrapper>
-                <Konseling user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <PerpusMain
+                  currentPage="pengembalian"
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -913,10 +889,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <Reports user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <Reports
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -929,10 +908,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <SPMB user={user} onShowToast={handleShowToast} darkMode={darkMode} />
+                <SPMB
+                  user={user}
+                  onShowToast={handleShowToast}
+                  darkMode={darkMode}
+                />
               </LayoutWrapper>
             </ProtectedRoute>
           }
@@ -945,8 +927,7 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
                 <Setting
                   user={user}
@@ -966,243 +947,13 @@ function App() {
               user={user}
               loading={loading}
               darkMode={darkMode}
-              onShowToast={handleShowToast}
-            >
+              onShowToast={handleShowToast}>
               <LayoutWrapper>
-                <MonitorSistem user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* ========== E-RAPORT ROUTES - DIUPDATE SESUAI DOKUMENTASI ========== */}
-
-        {/* Dashboard Admin */}
-        <Route
-          path="/era-dashboard-admin"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin"]}
-            >
-              <LayoutWrapper>
-                <DashboardAdmin user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Dashboard Guru Mapel */}
-        <Route
-          path="/era-dashboard-teacher"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher"]}
-            >
-              <LayoutWrapper>
-                <DashboardTeacher user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Dashboard Wali Kelas */}
-        <Route
-          path="/era-dashboard-homeroom"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <DashboardHomeroomTeacher
+                <MonitorSistem
                   user={user}
                   onShowToast={handleShowToast}
                   darkMode={darkMode}
                 />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input TP - SEMUA GURU */}
-        <Route
-          path="/era-input-tp"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-            >
-              <LayoutWrapper>
-                <InputTP user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input Nilai - SEMUA GURU */}
-        <Route
-          path="/era-input-nilai"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-            >
-              <LayoutWrapper>
-                <InputNilai user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 🆕 Cek Nilai - SEMUA GURU (Menu baru) */}
-        <Route
-          path="/era-cek-nilai"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-            >
-              <LayoutWrapper>
-                <CekNilai user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input Kehadiran - WALI KELAS ONLY */}
-        <Route
-          path="/era-input-kehadiran"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <InputKehadiran user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input Catatan - WALI KELAS ONLY */}
-        <Route
-          path="/era-input-catatan"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <InputCatatan user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input Kokurikuler - ADMIN & WALI KELAS ONLY */}
-        <Route
-          path="/era-input-kokurikuler"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <InputKokurikuler user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Input Ekstrakurikuler - ADMIN & WALI KELAS ONLY */}
-        <Route
-          path="/era-input-ekstrakurikuler"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["admin", "teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <InputEkstrakurikuler
-                  user={user}
-                  onShowToast={handleShowToast}
-                  darkMode={darkMode}
-                />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 🔄 Cek Status Nilai (dulu Cek Kelengkapan) - WALI KELAS ONLY */}
-        <Route
-          path="/era-cek-kelengkapan"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <CekStatusNilai user={user} onShowToast={handleShowToast} darkMode={darkMode} />
-              </LayoutWrapper>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Cetak Raport - WALI KELAS ONLY - GUNAKAN RaportPage */}
-        <Route
-          path="/era-cetak-raport"
-          element={
-            <ProtectedRoute
-              user={user}
-              loading={loading}
-              darkMode={darkMode}
-              onShowToast={handleShowToast}
-              allowedRoles={["teacher"]}
-              requireWaliKelas={true}
-            >
-              <LayoutWrapper>
-                <RaportPage user={user} onShowToast={handleShowToast} darkMode={darkMode} />
               </LayoutWrapper>
             </ProtectedRoute>
           }

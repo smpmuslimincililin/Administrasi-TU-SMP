@@ -9,7 +9,10 @@ import AttendanceTable from "./AttendanceTable";
 import AttendanceStats from "./AttendanceStats";
 
 // ✅ IMPORT ACADEMIC YEAR SERVICE
-import { getActiveAcademicInfo, filterBySemester } from "../../services/academicYearService";
+import {
+  getActiveAcademicInfo,
+  filterBySemester,
+} from "../../services/academicYearService";
 
 // ✅ OFFLINE SUPPORT
 import offlineHelper from "../../utils/offlineHelper";
@@ -65,7 +68,15 @@ const getNextWeekday = (dateString) => {
 };
 
 // ✅ REMINDER PRESENSI: Nama hari (Indonesia) sesuai kolom `day` di tabel teacher_schedules
-const DAY_NAMES_ID = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const DAY_NAMES_ID = [
+  "Minggu",
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat",
+  "Sabtu",
+];
 
 const getTodayDayNameWIB = () => {
   const todayWIB = getTodayWIB();
@@ -106,7 +117,10 @@ const isWithinAttendanceReminderHours = () => {
   const totalMinutes = wibTime.getHours() * 60 + wibTime.getMinutes();
 
   const { start, end } = getReminderHoursForToday();
-  return totalMinutes >= timeStringToMinutes(start) && totalMinutes < timeStringToMinutes(end);
+  return (
+    totalMinutes >= timeStringToMinutes(start) &&
+    totalMinutes < timeStringToMinutes(end)
+  );
 };
 
 const Attendance = ({ user, onShowToast }) => {
@@ -153,21 +167,25 @@ const Attendance = ({ user, onShowToast }) => {
 
   // ✅ REMINDER PRESENSI STATES
   const [showAttendanceReminder, setShowAttendanceReminder] = useState(false);
-  const [unfinishedReminderClasses, setUnfinishedReminderClasses] = useState([]); // Array of { classId, subject }
+  const [unfinishedReminderClasses, setUnfinishedReminderClasses] = useState(
+    [],
+  ); // Array of { classId, subject }
   const [reminderChecked, setReminderChecked] = useState(false);
 
   // ✅ WEEKEND VALIDATION: Auto-skip to next weekday if weekend selected
   const handleDateChange = (newDate) => {
     if (isWeekend(newDate)) {
       const nextWeekday = getNextWeekday(newDate);
-      console.log(`⚠️ Weekend detected (${newDate}), auto-skipping to ${nextWeekday}`);
+      console.log(
+        `⚠️ Weekend detected (${newDate}), auto-skipping to ${nextWeekday}`,
+      );
 
       if (onShowToast) {
         const dateObj = parseDate(newDate);
         const dayName = dateObj.getDay() === 0 ? "Minggu" : "Sabtu";
         onShowToast(
           `Hari ${dayName} bukan hari efektif. Auto-skip ke hari kerja berikutnya.`,
-          "warning"
+          "warning",
         );
       }
 
@@ -185,7 +203,7 @@ const Attendance = ({ user, onShowToast }) => {
   const filteredStudents = students.filter(
     (student) =>
       student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.nis.toLowerCase().includes(searchTerm.toLowerCase())
+      student.nis.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // ========== CORE HANDLERS ==========
@@ -194,7 +212,9 @@ const Attendance = ({ user, onShowToast }) => {
   useEffect(() => {
     if (date && isWeekend(date)) {
       const nextWeekday = getNextWeekday(date);
-      console.log(`⚠️ Initial date is weekend (${date}), auto-skipping to ${nextWeekday}`);
+      console.log(
+        `⚠️ Initial date is weekend (${date}), auto-skipping to ${nextWeekday}`,
+      );
       setDate(nextWeekday);
     }
   }, []); // Only run on mount
@@ -233,7 +253,8 @@ const Attendance = ({ user, onShowToast }) => {
     offlineHelper.subscribe((event) => {
       if (event.type === "online") {
         setIsOnline(true);
-        if (onShowToast) onShowToast("✅ Koneksi kembali! Auto-sync...", "success");
+        if (onShowToast)
+          onShowToast("✅ Koneksi kembali! Auto-sync...", "success");
         updateCounts();
       } else if (event.type === "offline") {
         setIsOnline(false);
@@ -242,12 +263,15 @@ const Attendance = ({ user, onShowToast }) => {
         // ✅ Kasih tau hasil sync yang lebih detail (berhasil/gagal berapa)
         if (onShowToast) {
           if (event.successCount > 0) {
-            onShowToast(`✅ ${event.successCount} data berhasil di-sync!`, "success");
+            onShowToast(
+              `✅ ${event.successCount} data berhasil di-sync!`,
+              "success",
+            );
           }
           if (event.failedCount > 0) {
             onShowToast(
               `⚠️ ${event.failedCount} data gagal disinkronkan setelah beberapa percobaan. Cek panel offline.`,
-              "error"
+              "error",
             );
           }
         }
@@ -264,7 +288,8 @@ const Attendance = ({ user, onShowToast }) => {
   // ✅ BARU: Handler retry manual dari UI
   const handleRetrySync = async () => {
     if (!isOnline) {
-      if (onShowToast) onShowToast("Tidak bisa retry, Anda sedang offline", "error");
+      if (onShowToast)
+        onShowToast("Tidak bisa retry, Anda sedang offline", "error");
       return;
     }
     setIsRetrying(true);
@@ -274,7 +299,8 @@ const Attendance = ({ user, onShowToast }) => {
         onShowToast("Tidak ada data yang perlu di-retry", "info");
       }
     } catch (error) {
-      if (onShowToast) onShowToast("Gagal melakukan retry: " + error.message, "error");
+      if (onShowToast)
+        onShowToast("Gagal melakukan retry: " + error.message, "error");
     } finally {
       setIsRetrying(false);
       const count = await offlineHelper.getPendingCount();
@@ -300,7 +326,10 @@ const Attendance = ({ user, onShowToast }) => {
     setHasUserInteracted(true); // ✅ Mark as interacted
 
     if (onShowToast) {
-      onShowToast(`Berhasil mengubah status ${students.length} siswa menjadi HADIR`, "success");
+      onShowToast(
+        `Berhasil mengubah status ${students.length} siswa menjadi HADIR`,
+        "success",
+      );
     }
   };
 
@@ -308,7 +337,9 @@ const Attendance = ({ user, onShowToast }) => {
   const validateDate = () => {
     if (!selectedSemesterId || !date) return { valid: true };
 
-    const selectedSemester = availableSemesters.find((s) => s.id === selectedSemesterId);
+    const selectedSemester = availableSemesters.find(
+      (s) => s.id === selectedSemesterId,
+    );
 
     if (!selectedSemester) {
       return { valid: false, message: "Semester tidak valid" };
@@ -331,7 +362,9 @@ const Attendance = ({ user, onShowToast }) => {
     // ✅ VALIDASI 2: Tanggal harus dalam range semester
     if (inputDate < startDate || inputDate > endDate) {
       const semesterName =
-        selectedSemester.semester === 1 ? "Ganjil (Juli-Desember)" : "Genap (Januari-Juni)";
+        selectedSemester.semester === 1
+          ? "Ganjil (Juli-Desember)"
+          : "Genap (Januari-Juni)";
       return {
         valid: false,
         message: `❌ Tanggal harus dalam periode ${selectedSemester.year} Semester ${semesterName}`,
@@ -366,7 +399,7 @@ const Attendance = ({ user, onShowToast }) => {
           if (onShowToast) {
             onShowToast("Presensi Baru Ditambahkan", "info");
           }
-        }
+        },
       )
       .subscribe();
 
@@ -408,7 +441,9 @@ const Attendance = ({ user, onShowToast }) => {
   const handleSemesterChange = (semesterId) => {
     setSelectedSemesterId(semesterId);
 
-    const selectedSemester = availableSemesters.find((s) => s.id === semesterId);
+    const selectedSemester = availableSemesters.find(
+      (s) => s.id === semesterId,
+    );
     const isActive = selectedSemester?.is_active || false;
 
     setIsReadOnlyMode(!isActive);
@@ -426,7 +461,7 @@ const Attendance = ({ user, onShowToast }) => {
         const mode = isActive ? "Input Mode" : "View Only Mode";
         onShowToast(
           `Switched to ${selectedSemester.year} - Semester ${selectedSemester.semester} (${mode})`,
-          isActive ? "info" : "warning"
+          isActive ? "info" : "warning",
         );
       }
     }
@@ -463,7 +498,10 @@ const Attendance = ({ user, onShowToast }) => {
               setHomeroomClass(teacherData.homeroom_class_id);
             }
           } else {
-            console.warn("⚠️ No teacher data found for username:", user.username);
+            console.warn(
+              "⚠️ No teacher data found for username:",
+              user.username,
+            );
             setMessage("Data guru tidak ditemukan di sistem");
           }
         } else {
@@ -563,7 +601,10 @@ const Attendance = ({ user, onShowToast }) => {
           .eq("day", todayDayName);
 
         if (schedulesError) {
-          console.error("Error fetching teacher_schedules for reminder:", schedulesError);
+          console.error(
+            "Error fetching teacher_schedules for reminder:",
+            schedulesError,
+          );
           return; // ⚠️ JANGAN setReminderChecked(true) - biar dicoba lagi menit berikutnya
         }
 
@@ -572,7 +613,9 @@ const Attendance = ({ user, onShowToast }) => {
           return;
         }
 
-        const scheduledClassIds = [...new Set(schedulesData.map((s) => s.class_id))];
+        const scheduledClassIds = [
+          ...new Set(schedulesData.map((s) => s.class_id)),
+        ];
 
         // 2️⃣ Ambil mapel yang diampu guru ini per kelas (dari teacher_assignments,
         //    difilter semester aktif) - buat tau kelas hari ini itu mapel apa aja.
@@ -584,10 +627,14 @@ const Attendance = ({ user, onShowToast }) => {
 
         assignmentQuery = filterBySemester(assignmentQuery, selectedSemesterId);
 
-        const { data: assignmentData, error: assignmentError } = await assignmentQuery;
+        const { data: assignmentData, error: assignmentError } =
+          await assignmentQuery;
 
         if (assignmentError) {
-          console.error("Error fetching teacher_assignments for reminder:", assignmentError);
+          console.error(
+            "Error fetching teacher_assignments for reminder:",
+            assignmentError,
+          );
           return; // ⚠️ JANGAN setReminderChecked(true) - biar dicoba lagi menit berikutnya
         }
 
@@ -612,7 +659,11 @@ const Attendance = ({ user, onShowToast }) => {
 
         // Guru wali kelas: presensi harian juga dihitung sebagai kewajiban,
         // kalau kelas perwaliannya kebetulan ada di jadwal hari ini.
-        if (isHomeroomTeacher && homeroomClass && scheduledClassIds.includes(homeroomClass)) {
+        if (
+          isHomeroomTeacher &&
+          homeroomClass &&
+          scheduledClassIds.includes(homeroomClass)
+        ) {
           expected.push({ classId: homeroomClass, subject: "Harian" });
         }
 
@@ -624,21 +675,33 @@ const Attendance = ({ user, onShowToast }) => {
           .eq("date", todayDate);
 
         if (attendanceError) {
-          console.error("Error fetching attendances for reminder:", attendanceError);
+          console.error(
+            "Error fetching attendances for reminder:",
+            attendanceError,
+          );
           return; // ⚠️ JANGAN setReminderChecked(true) - biar dicoba lagi menit berikutnya
         }
 
-        const doneKeys = new Set((attendanceData || []).map((a) => `${a.class_id}::${a.subject}`));
+        const doneKeys = new Set(
+          (attendanceData || []).map((a) => `${a.class_id}::${a.subject}`),
+        );
         // Set khusus buat fallback (subject: null) -> cukup cek class_id aja udah ada record atau belum
-        const doneClassIds = new Set((attendanceData || []).map((a) => a.class_id));
+        const doneClassIds = new Set(
+          (attendanceData || []).map((a) => a.class_id),
+        );
 
         const missing = expected.filter((item) =>
           item.subject === null
             ? !doneClassIds.has(item.classId)
-            : !doneKeys.has(`${item.classId}::${item.subject}`)
+            : !doneKeys.has(`${item.classId}::${item.subject}`),
         );
 
-        console.log("🔔 Reminder check:", { scheduledClassIds, expected, attendanceData, missing });
+        console.log("🔔 Reminder check:", {
+          scheduledClassIds,
+          expected,
+          attendanceData,
+          missing,
+        });
 
         setReminderChecked(true); // ✅ Berhasil sampai akhir - ga perlu dicek ulang lagi hari ini
 
@@ -682,7 +745,10 @@ const Attendance = ({ user, onShowToast }) => {
     setShowAttendanceReminder(false);
     if (teacherUUID) {
       const todayDate = getDefaultDate();
-      localStorage.setItem(`attendance_reminder_dismissed_${teacherUUID}_${todayDate}`, "1");
+      localStorage.setItem(
+        `attendance_reminder_dismissed_${teacherUUID}_${todayDate}`,
+        "1",
+      );
     }
   };
 
@@ -748,7 +814,13 @@ const Attendance = ({ user, onShowToast }) => {
     };
 
     fetchSubjects();
-  }, [teacherId, isHomeroomTeacher, homeroomClass, user?.role, selectedSemesterId]);
+  }, [
+    teacherId,
+    isHomeroomTeacher,
+    homeroomClass,
+    user?.role,
+    selectedSemesterId,
+  ]);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -795,7 +867,9 @@ const Attendance = ({ user, onShowToast }) => {
             .order("full_name");
 
           if (studentsError) {
-            setMessage("Error: Gagal mengambil data siswa - " + studentsError.message);
+            setMessage(
+              "Error: Gagal mengambil data siswa - " + studentsError.message,
+            );
           } else {
             setStudents(studentsData || []);
             setStudentsLoaded(true);
@@ -840,13 +914,15 @@ const Attendance = ({ user, onShowToast }) => {
 
         if (!assignmentData?.length) {
           setClasses([]);
-          const currentSemester = availableSemesters.find((s) => s.id === selectedSemesterId);
+          const currentSemester = availableSemesters.find(
+            (s) => s.id === selectedSemesterId,
+          );
           setMessage(
             `Tidak ada kelas untuk "${selectedSubject}" di ${
               currentSemester
                 ? `${currentSemester.year} - Semester ${currentSemester.semester}`
                 : "semester ini"
-            }`
+            }`,
           );
           return;
         }
@@ -904,7 +980,14 @@ const Attendance = ({ user, onShowToast }) => {
     ) {
       fetchExistingAttendance();
     }
-  }, [date, selectedClass, selectedSubject, students, studentsLoaded, selectedSemesterId]);
+  }, [
+    date,
+    selectedClass,
+    selectedSubject,
+    students,
+    studentsLoaded,
+    selectedSemesterId,
+  ]);
 
   const fetchStudentsForClass = async (classId) => {
     if (!classId) {
@@ -969,14 +1052,22 @@ const Attendance = ({ user, onShowToast }) => {
   };
 
   const fetchExistingAttendance = async () => {
-    if (!selectedClass || !date || !selectedSubject || !teacherId || !selectedSemesterId) {
+    if (
+      !selectedClass ||
+      !date ||
+      !selectedSubject ||
+      !teacherId ||
+      !selectedSemesterId
+    ) {
       return;
     }
 
     // ✅ Kalau offline, ga usah coba fetch existing attendance ke server
     // (biar ga stuck loading nunggu request yang bakal timeout)
     if (!isOnline) {
-      console.log("ℹ️ Offline - skip fetch existing attendance, tetap pakai status kosong");
+      console.log(
+        "ℹ️ Offline - skip fetch existing attendance, tetap pakai status kosong",
+      );
       return;
     }
 
@@ -1034,7 +1125,11 @@ const Attendance = ({ user, onShowToast }) => {
         setAttendanceNotes(notesMap);
         setHasUserInteracted(true);
 
-        console.log("✅ Loaded existing attendance data:", attendanceData.length, "records");
+        console.log(
+          "✅ Loaded existing attendance data:",
+          attendanceData.length,
+          "records",
+        );
       } else {
         setAttendanceStatus({});
         setAttendanceNotes({});
@@ -1070,7 +1165,7 @@ const Attendance = ({ user, onShowToast }) => {
         .eq("class_id", selectedClass)
         .in(
           "student_id",
-          students.map((s) => s.id)
+          students.map((s) => s.id),
         );
 
       if (selectedSemesterId) {
@@ -1101,7 +1196,10 @@ const Attendance = ({ user, onShowToast }) => {
       const { error } = await supabase.from("attendances").insert(batch);
 
       if (error) {
-        console.error(`Error inserting batch ${Math.floor(i / BATCH_SIZE) + 1}:`, error);
+        console.error(
+          `Error inserting batch ${Math.floor(i / BATCH_SIZE) + 1}:`,
+          error,
+        );
         errorCount += batch.length;
       } else {
         successCount += batch.length;
@@ -1148,7 +1246,7 @@ const Attendance = ({ user, onShowToast }) => {
       if (onShowToast) {
         onShowToast(
           "🔒 Semester ini dalam mode View Only. Ganti ke semester aktif untuk input data baru!",
-          "error"
+          "error",
         );
       }
       return;
@@ -1188,13 +1286,15 @@ const Attendance = ({ user, onShowToast }) => {
         // ✅ OFFLINE: JANGAN fetch ke server. Pakai cache yang udah disiapin
         // dari effect resolveTeacherUUID (atau state kalau udah ke-set).
         if (!resolvedTeacherUUID) {
-          resolvedTeacherUUID = await offlineHelper.getCache(`teacherUUID_${teacherId}`);
+          resolvedTeacherUUID = await offlineHelper.getCache(
+            `teacherUUID_${teacherId}`,
+          );
         }
 
         if (!resolvedTeacherUUID) {
           // Belum pernah online sejak buka app -> ga ada cache buat dipakai
           throw new Error(
-            "Data guru belum sempat ke-cache. Buka halaman ini sekali saat online, baru bisa presensi offline."
+            "Data guru belum sempat ke-cache. Buka halaman ini sekali saat online, baru bisa presensi offline.",
           );
         }
       } else {
@@ -1206,8 +1306,12 @@ const Attendance = ({ user, onShowToast }) => {
             .eq("teacher_id", teacherId)
             .maybeSingle();
 
-          if (teacherError) throw new Error("Gagal mengambil data guru: " + teacherError.message);
-          if (!teacherUser) throw new Error("Data guru tidak ditemukan di sistem");
+          if (teacherError)
+            throw new Error(
+              "Gagal mengambil data guru: " + teacherError.message,
+            );
+          if (!teacherUser)
+            throw new Error("Data guru tidak ditemukan di sistem");
 
           resolvedTeacherUUID = teacherUser.id;
           setTeacherUUID(resolvedTeacherUUID);
@@ -1215,13 +1319,15 @@ const Attendance = ({ user, onShowToast }) => {
         await offlineHelper.cacheData(
           `teacherUUID_${teacherId}`,
           resolvedTeacherUUID,
-          "teacherUUID"
+          "teacherUUID",
         );
       }
 
       const teacherUUIDToUse = resolvedTeacherUUID;
       const typeValue = isHomeroomDaily() ? "harian" : "mapel";
-      const currentSemester = availableSemesters.find((s) => s.id === selectedSemesterId);
+      const currentSemester = availableSemesters.find(
+        (s) => s.id === selectedSemesterId,
+      );
 
       const attendanceData = students.map((student) => ({
         student_id: student.id,
@@ -1247,7 +1353,10 @@ const Attendance = ({ user, onShowToast }) => {
         setPendingCount(count);
 
         if (onShowToast) {
-          onShowToast(`💾 Offline: ${students.length} data disimpan lokal`, "success");
+          onShowToast(
+            `💾 Offline: ${students.length} data disimpan lokal`,
+            "success",
+          );
         }
 
         handleSaveSuccess(students.length, true); // ✅ true = offline save
@@ -1256,7 +1365,10 @@ const Attendance = ({ user, onShowToast }) => {
       }
 
       // ✅ ONLINE MODE: Normal save
-      const existingData = await checkExistingAttendance(teacherUUIDToUse, typeValue);
+      const existingData = await checkExistingAttendance(
+        teacherUUIDToUse,
+        typeValue,
+      );
 
       if (existingData && existingData.length > 0) {
         setPendingAttendanceData(attendanceData);
@@ -1266,10 +1378,13 @@ const Attendance = ({ user, onShowToast }) => {
         return;
       }
 
-      const { successCount, errorCount } = await saveAttendanceData(attendanceData);
+      const { successCount, errorCount } =
+        await saveAttendanceData(attendanceData);
 
       if (errorCount > 0) {
-        throw new Error(`Berhasil menyimpan ${successCount} data, gagal ${errorCount} data.`);
+        throw new Error(
+          `Berhasil menyimpan ${successCount} data, gagal ${errorCount} data.`,
+        );
       }
 
       handleSaveSuccess(successCount);
@@ -1282,17 +1397,21 @@ const Attendance = ({ user, onShowToast }) => {
       // ini pasti gagal lagi juga dan bikin error message-nya jadi membingungkan.
       try {
         if (!resolvedTeacherUUID) {
-          resolvedTeacherUUID = await offlineHelper.getCache(`teacherUUID_${teacherId}`);
+          resolvedTeacherUUID = await offlineHelper.getCache(
+            `teacherUUID_${teacherId}`,
+          );
         }
 
         if (!resolvedTeacherUUID) {
           throw new Error(
-            "Data guru belum sempat ke-cache, tidak bisa disimpan offline. Buka halaman ini sekali saat online dulu."
+            "Data guru belum sempat ke-cache, tidak bisa disimpan offline. Buka halaman ini sekali saat online dulu.",
           );
         }
 
         const typeValue = isHomeroomDaily() ? "harian" : "mapel";
-        const currentSemester = availableSemesters.find((s) => s.id === selectedSemesterId);
+        const currentSemester = availableSemesters.find(
+          (s) => s.id === selectedSemesterId,
+        );
 
         const attendanceData = students.map((student) => ({
           student_id: student.id,
@@ -1316,7 +1435,10 @@ const Attendance = ({ user, onShowToast }) => {
         setPendingCount(count);
 
         if (onShowToast) {
-          onShowToast("⚠️ Error - Data disimpan offline & akan auto-sync", "warning");
+          onShowToast(
+            "⚠️ Error - Data disimpan offline & akan auto-sync",
+            "warning",
+          );
         }
       } catch (offlineError) {
         console.error("Offline save failed:", offlineError);
@@ -1345,8 +1467,10 @@ const Attendance = ({ user, onShowToast }) => {
           .eq("teacher_id", teacherId)
           .maybeSingle();
 
-        if (teacherError) throw new Error("Gagal mengambil data guru: " + teacherError.message);
-        if (!teacherUser) throw new Error("Data guru tidak ditemukan di sistem");
+        if (teacherError)
+          throw new Error("Gagal mengambil data guru: " + teacherError.message);
+        if (!teacherUser)
+          throw new Error("Data guru tidak ditemukan di sistem");
 
         teacherUUIDToUse = teacherUser.id;
         setTeacherUUID(teacherUUIDToUse);
@@ -1355,10 +1479,14 @@ const Attendance = ({ user, onShowToast }) => {
       const typeValue = isHomeroomDaily() ? "harian" : "mapel";
 
       await deleteExistingAttendance(teacherUUIDToUse, typeValue);
-      const { successCount, errorCount } = await saveAttendanceData(pendingAttendanceData);
+      const { successCount, errorCount } = await saveAttendanceData(
+        pendingAttendanceData,
+      );
 
       if (errorCount > 0) {
-        throw new Error(`Berhasil menyimpan ${successCount} data, gagal ${errorCount} data.`);
+        throw new Error(
+          `Berhasil menyimpan ${successCount} data, gagal ${errorCount} data.`,
+        );
       }
 
       handleSaveSuccess(successCount);
@@ -1385,16 +1513,20 @@ const Attendance = ({ user, onShowToast }) => {
   };
 
   const handleSaveSuccess = (successCount, isOfflineSave = false) => {
-    const currentSemester = availableSemesters.find((s) => s.id === selectedSemesterId);
+    const currentSemester = availableSemesters.find(
+      (s) => s.id === selectedSemesterId,
+    );
 
     if (onShowToast && !isOfflineSave) {
       onShowToast(
         `Presensi berhasil disimpan untuk ${successCount} siswa pada ${
           isHomeroomDaily() ? "presensi harian" : selectedSubject
         } tanggal ${date}${
-          currentSemester ? ` (${currentSemester.year} - Semester ${currentSemester.semester})` : ""
+          currentSemester
+            ? ` (${currentSemester.year} - Semester ${currentSemester.semester})`
+            : ""
         }`,
-        "success"
+        "success",
       );
     }
 
@@ -1445,8 +1577,7 @@ const Attendance = ({ user, onShowToast }) => {
                 : isOnline
                   ? "bg-blue-500/90 border-blue-400 text-white"
                   : "bg-amber-500/90 border-amber-400 text-white"
-            }`}
-          >
+            }`}>
             <div className="flex items-center gap-2 text-sm font-semibold">
               <span>{isOnline ? "🟢" : "🔴"}</span>
               <span>{isOnline ? "Online" : "Offline"}</span>
@@ -1461,13 +1592,13 @@ const Attendance = ({ user, onShowToast }) => {
             {failedCount > 0 && (
               <div className="mt-2 pt-2 border-t border-white/30">
                 <p className="text-xs mb-2">
-                  ⚠️ {failedCount} data gagal disinkronkan setelah beberapa percobaan.
+                  ⚠️ {failedCount} data gagal disinkronkan setelah beberapa
+                  percobaan.
                 </p>
                 <button
                   onClick={handleRetrySync}
                   disabled={isRetrying || !isOnline}
-                  className="w-full text-xs font-semibold bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 transition disabled:opacity-50"
-                >
+                  className="w-full text-xs font-semibold bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 transition disabled:opacity-50">
                   {isRetrying ? "Mencoba lagi..." : "🔄 Coba Sync Ulang"}
                 </button>
               </div>
@@ -1488,8 +1619,9 @@ const Attendance = ({ user, onShowToast }) => {
                 Mode View Only (Read-Only)
               </h3>
               <p className="text-amber-700 dark:text-amber-400 leading-relaxed">
-                Semester ini tidak aktif. Anda hanya bisa <strong>melihat data</strong>. Untuk input
-                presensi baru, pilih semester yang sedang aktif.
+                Semester ini tidak aktif. Anda hanya bisa{" "}
+                <strong>melihat data</strong>. Untuk input presensi baru, pilih
+                semester yang sedang aktif.
               </p>
             </div>
           </div>
@@ -1523,7 +1655,10 @@ const Attendance = ({ user, onShowToast }) => {
       {students.length > 0 && (
         <>
           {/* ✅ ATTENDANCE STATS - Summary Cards */}
-          <AttendanceStats attendanceStatus={attendanceStatus} students={students} />
+          <AttendanceStats
+            attendanceStatus={attendanceStatus}
+            students={students}
+          />
 
           {/* Action Buttons & Search */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-6 lg:mb-8">
@@ -1545,9 +1680,10 @@ const Attendance = ({ user, onShowToast }) => {
                 className="flex-1 sm:flex-none min-h-[52px] px-5 py-3 text-base font-medium bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-2 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 rounded-xl hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/40 dark:hover:to-blue-700/40 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 onClick={setAllHadir}
                 disabled={loading || isReadOnlyMode}
-                title={isReadOnlyMode ? "Tidak bisa edit di semester non-aktif" : ""}
-                style={{ minWidth: "140px" }}
-              >
+                title={
+                  isReadOnlyMode ? "Tidak bisa edit di semester non-aktif" : ""
+                }
+                style={{ minWidth: "140px" }}>
                 ✅ Hadir Semua
               </button>
 
@@ -1574,8 +1710,7 @@ const Attendance = ({ user, onShowToast }) => {
                       ? "Silakan input status presensi siswa terlebih dahulu"
                       : ""
                 }
-                style={{ minWidth: "180px" }}
-              >
+                style={{ minWidth: "180px" }}>
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
@@ -1611,27 +1746,36 @@ const Attendance = ({ user, onShowToast }) => {
       {/* Empty States */}
       {selectedClass && students.length === 0 && !loading && (
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center transition-colors duration-200">
-          <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">📚</div>
+          <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">
+            📚
+          </div>
           <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
             Tidak ada siswa aktif di kelas ini
           </p>
         </div>
       )}
 
-      {!selectedClass && selectedSubject && classes.length === 0 && !isHomeroomDaily() && (
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center transition-colors duration-200">
-          <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">🏫</div>
-          <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
-            {selectedSemesterId
-              ? `Tidak ada kelas untuk "${selectedSubject}" di semester yang dipilih`
-              : "Pilih semester terlebih dahulu"}
-          </p>
-        </div>
-      )}
+      {!selectedClass &&
+        selectedSubject &&
+        classes.length === 0 &&
+        !isHomeroomDaily() && (
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center transition-colors duration-200">
+            <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">
+              🏫
+            </div>
+            <p className="text-lg text-slate-500 dark:text-slate-400 font-medium">
+              {selectedSemesterId
+                ? `Tidak ada kelas untuk "${selectedSubject}" di semester yang dipilih`
+                : "Pilih semester terlebih dahulu"}
+            </p>
+          </div>
+        )}
 
       {!selectedSubject && (
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 text-center transition-colors duration-200">
-          <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">📚</div>
+          <div className="text-5xl mb-4 text-slate-300 dark:text-slate-600">
+            📚
+          </div>
         </div>
       )}
 
@@ -1661,14 +1805,32 @@ const Attendance = ({ user, onShowToast }) => {
                 <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
                   <p>• Total siswa: {existingAttendanceData.length}</p>
                   <p>
-                    • Hadir: {existingAttendanceData.filter((d) => d.status === "Hadir").length}
+                    • Hadir:{" "}
+                    {
+                      existingAttendanceData.filter((d) => d.status === "Hadir")
+                        .length
+                    }
                   </p>
                   <p>
-                    • Sakit: {existingAttendanceData.filter((d) => d.status === "Sakit").length}
+                    • Sakit:{" "}
+                    {
+                      existingAttendanceData.filter((d) => d.status === "Sakit")
+                        .length
+                    }
                   </p>
-                  <p>• Izin: {existingAttendanceData.filter((d) => d.status === "Izin").length}</p>
                   <p>
-                    • Alpha: {existingAttendanceData.filter((d) => d.status === "Alpha").length}
+                    • Izin:{" "}
+                    {
+                      existingAttendanceData.filter((d) => d.status === "Izin")
+                        .length
+                    }
+                  </p>
+                  <p>
+                    • Alpha:{" "}
+                    {
+                      existingAttendanceData.filter((d) => d.status === "Alpha")
+                        .length
+                    }
                   </p>
                 </div>
               </div>
@@ -1678,15 +1840,13 @@ const Attendance = ({ user, onShowToast }) => {
               <button
                 onClick={handleCancelOverwrite}
                 disabled={loading}
-                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
-              >
+                className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50">
                 Batal
               </button>
               <button
                 onClick={handleOverwriteConfirmation}
                 disabled={loading}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50"
-              >
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50">
                 {loading ? "Menyimpan..." : "Ya, Timpa Data"}
               </button>
             </div>
@@ -1703,8 +1863,7 @@ const Attendance = ({ user, onShowToast }) => {
               <button
                 onClick={handleDismissReminder}
                 className="absolute top-4 right-4 text-white/90 hover:text-white transition-colors"
-                aria-label="Tutup"
-              >
+                aria-label="Tutup">
                 ✕
               </button>
               <div className="flex items-center gap-3 pr-8">
@@ -1712,8 +1871,12 @@ const Attendance = ({ user, onShowToast }) => {
                   <span className="text-2xl">🔔</span>
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white">Reminder Presensi</h3>
-                  <p className="text-sm text-white/90">Jangan Lupa Presensi Siswa Hari Ini!</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                    Reminder Presensi
+                  </h3>
+                  <p className="text-sm text-white/90">
+                    Jangan Lupa Presensi Siswa Hari Ini!
+                  </p>
                 </div>
               </div>
             </div>
@@ -1721,8 +1884,8 @@ const Attendance = ({ user, onShowToast }) => {
             {/* Body */}
             <div className="p-5 sm:p-6">
               <p className="text-slate-700 dark:text-slate-300 text-center leading-relaxed">
-                Anda Memiliki Jadwal Mengajar Hari Ini. Silakan Lakukan Presensi Siswa Untuk
-                Mencatat Kehadiran Mereka.
+                Anda Memiliki Jadwal Mengajar Hari Ini. Silakan Lakukan Presensi
+                Siswa Untuk Mencatat Kehadiran Mereka.
               </p>
 
               <div className="mt-4 flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-600 rounded-r-xl p-4">
@@ -1733,7 +1896,7 @@ const Attendance = ({ user, onShowToast }) => {
                     .map((item) =>
                       item.subject
                         ? `Kelas ${item.classId} - ${item.subject}`
-                        : `Kelas ${item.classId}`
+                        : `Kelas ${item.classId}`,
                     )
                     .join(", ")}
                 </p>
@@ -1742,22 +1905,21 @@ const Attendance = ({ user, onShowToast }) => {
               <div className="mt-3 flex items-start gap-3 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-400 dark:border-orange-600 rounded-r-xl p-4">
                 <span className="text-xl flex-shrink-0">⏰</span>
                 <p className="text-sm text-orange-800 dark:text-orange-300">
-                  <strong>Batas Waktu:</strong> Input presensi tersedia sampai jam{" "}
-                  {getReminderHoursForToday().end} WIB. Pastikan Anda presensi sebelum batas waktu!
+                  <strong>Batas Waktu:</strong> Input presensi tersedia sampai
+                  jam {getReminderHoursForToday().end} WIB. Pastikan Anda
+                  presensi sebelum batas waktu!
                 </p>
               </div>
 
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={handleDismissReminder}
-                  className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
-                >
+                  className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-all">
                   Nanti
                 </button>
                 <button
                   onClick={handleGoToAttendanceFromReminder}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm"
-                >
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm">
                   Presensi Sekarang
                 </button>
               </div>

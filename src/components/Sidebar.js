@@ -343,18 +343,20 @@ const Sidebar = ({
             )}
           </div>
 
-          {/* ========== AKADEMIK ========== */}
-          <div className="mb-4 sm:mb-5">
-            {!isCollapsed && (
-              <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">
-                AKADEMIK
-              </div>
-            )}
-            {/* ✓ Presensi Guru & Staf — Petugas Perpus dipindah ke Master Data, jadi di sini cuma FULL_ACCESS_ROLES */}
-            {hasFullAccess && (
-              <a
-                href="#attendance-teacher"
-                className={`
+          {/* ========== AKADEMIK (khusus FULL_ACCESS_ROLES) ========== */}
+          {/* Petugas Perpus dikecualikan total — Presensi Guru & Staf-nya udah dipindah ke Master Data */}
+          {hasFullAccess && (
+            <div className="mb-4 sm:mb-5">
+              {!isCollapsed && (
+                <div className="px-4 sm:px-6 pb-2 text-xs uppercase font-semibold text-blue-300 dark:text-gray-400 tracking-wider">
+                  AKADEMIK
+                </div>
+              )}
+              {/* ✓ Presensi Guru & Staf — Petugas Perpus dipindah ke Master Data, jadi di sini cuma FULL_ACCESS_ROLES */}
+              {hasFullAccess && (
+                <a
+                  href="#attendance-teacher"
+                  className={`
                   flex items-center gap-3 px-4 sm:px-6 py-2.5 text-white dark:text-gray-200 font-medium transition-all duration-200 cursor-pointer hover:bg-blue-800 dark:hover:bg-gray-800 rounded-r-full mr-4
                   touch-manipulation min-h-[44px]
                   ${isCollapsed ? "justify-center" : ""}
@@ -364,33 +366,33 @@ const Sidebar = ({
                       : "hover:text-blue-100 dark:hover:text-gray-100"
                   }
                 `}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleMenuClick("attendance-teacher");
-                }}
-                title={isCollapsed ? "Presensi Guru & Staf" : ""}>
-                <svg
-                  className="w-5 h-5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                {!isCollapsed && (
-                  <span className="flex-1 text-sm">Presensi Guru & Staf</span>
-                )}
-              </a>
-            )}
-            {/* ✓ Presensi Siswa */}
-            {hasFullAccess && (
-              <a
-                href="#attendance"
-                className={`
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleMenuClick("attendance-teacher");
+                  }}
+                  title={isCollapsed ? "Presensi Guru & Staf" : ""}>
+                  <svg
+                    className="w-5 h-5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  {!isCollapsed && (
+                    <span className="flex-1 text-sm">Presensi Guru & Staf</span>
+                  )}
+                </a>
+              )}
+              {/* ✓ Presensi Siswa */}
+              {hasFullAccess && (
+                <a
+                  href="#attendance"
+                  className={`
                   flex items-center gap-3 px-4 sm:px-6 py-2.5 text-white dark:text-gray-200 font-medium transition-all duration-200 cursor-pointer hover:bg-blue-800 dark:hover:bg-gray-800 rounded-r-full mr-4
                   touch-manipulation min-h-[44px]
                   ${isCollapsed ? "justify-center" : ""}
@@ -400,34 +402,34 @@ const Sidebar = ({
                       : "hover:text-blue-100 dark:hover:text-gray-100"
                   }
                 `}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleMenuClick("attendance");
-                }}
-                title={isCollapsed ? "Presensi Siswa" : ""}>
-                <svg
-                  className="w-5 h-5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                  />
-                </svg>
-                {!isCollapsed && (
-                  <span className="flex-1 text-sm">Presensi Siswa</span>
-                )}
-              </a>
-            )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleMenuClick("attendance");
+                  }}
+                  title={isCollapsed ? "Presensi Siswa" : ""}>
+                  <svg
+                    className="w-5 h-5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                    />
+                  </svg>
+                  {!isCollapsed && (
+                    <span className="flex-1 text-sm">Presensi Siswa</span>
+                  )}
+                </a>
+              )}
 
-            {/* ✓ Nilai Siswa */}
-            {hasFullAccess && (
-              <a
-                href="#nilai-siswa"
-                className={`
+              {/* ✓ Nilai Siswa */}
+              {hasFullAccess && (
+                <a
+                  href="#nilai-siswa"
+                  className={`
       flex items-center gap-3 px-4 sm:px-6 py-2.5 text-white dark:text-gray-200 font-medium transition-all duration-200 cursor-pointer hover:bg-blue-800 dark:hover:bg-gray-800 rounded-r-full mr-4
       touch-manipulation min-h-[44px]
       ${isCollapsed ? "justify-center" : ""}
@@ -437,33 +439,33 @@ const Sidebar = ({
           : "hover:text-blue-100 dark:hover:text-gray-100"
       }
     `}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleMenuClick("nilai-siswa");
-                }}
-                title={isCollapsed ? "Nilai Siswa" : ""}>
-                <svg
-                  className="w-5 h-5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-                {!isCollapsed && (
-                  <span className="flex-1 text-sm">Nilai Siswa</span>
-                )}
-              </a>
-            )}
-            {/* 📊 Laporan */}
-            {hasFullAccess && (
-              <a
-                href="#reports"
-                className={`
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleMenuClick("nilai-siswa");
+                  }}
+                  title={isCollapsed ? "Nilai Siswa" : ""}>
+                  <svg
+                    className="w-5 h-5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                  {!isCollapsed && (
+                    <span className="flex-1 text-sm">Nilai Siswa</span>
+                  )}
+                </a>
+              )}
+              {/* 📊 Laporan */}
+              {hasFullAccess && (
+                <a
+                  href="#reports"
+                  className={`
       flex items-center gap-3 px-4 sm:px-6 py-2.5 text-white dark:text-gray-200 font-medium transition-all duration-200 cursor-pointer hover:bg-blue-800 dark:hover:bg-gray-800 rounded-r-full mr-4
       touch-manipulation min-h-[44px]
       ${isCollapsed ? "justify-center" : ""}
@@ -473,29 +475,30 @@ const Sidebar = ({
           : "hover:text-blue-100 dark:hover:text-gray-100"
       }
     `}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleMenuClick("reports");
-                }}
-                title={isCollapsed ? "Laporan" : ""}>
-                <svg
-                  className="w-5 h-5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                {!isCollapsed && (
-                  <span className="flex-1 text-sm">Laporan</span>
-                )}
-              </a>
-            )}
-          </div>
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleMenuClick("reports");
+                  }}
+                  title={isCollapsed ? "Laporan" : ""}>
+                  <svg
+                    className="w-5 h-5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  {!isCollapsed && (
+                    <span className="flex-1 text-sm">Laporan</span>
+                  )}
+                </a>
+              )}
+            </div>
+          )}
 
           {/* ========== PERPUSTAKAAN ========== */}
           {(hasFullAccess || isPetugasPerpus) && (

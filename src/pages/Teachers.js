@@ -64,7 +64,7 @@ export const Teachers = () => {
           tugasMapel = ["Staff TU"];
         } else if (guru.role === "petugas_perpus") {
           // Petugas Perpustakaan
-          tugasMapel = ["Petugas Perpustakaan"];
+          tugasMapel = ["Perpustakaan"];
         } else {
           // Guru biasa - ambil dari teacher_assignments
           const mapelGuru = mapelData

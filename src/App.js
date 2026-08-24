@@ -80,6 +80,7 @@ const ProtectedRoute = ({
   const [userRole, setUserRole] = useState(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const [userFullData, setUserFullData] = useState(null); // ← Untuk simpan data lengkap user
+  const [lockedRedirectCountdown, setLockedRedirectCountdown] = useState(3); // 🔥 Countdown auto-reload untuk akun guru
 
   // 🔥 Fetch user data with homeroom_class_id
   useEffect(() => {
@@ -221,6 +222,35 @@ const ProtectedRoute = ({
     };
   }, []);
 
+  // 🔥 AUTO RELOAD KETIKA AKUN GURU MASUK KE APP TU INI
+  // Guru/guru_bk gak boleh nyangkut di halaman block — auto logout & reload ke login
+  useEffect(() => {
+    if (roleLoading || !LOCKED_ROLES.includes(userRole)) return;
+
+    console.log(
+      `🔴 Akun guru (role: ${userRole}) terdeteksi masuk ke app TU, auto reload dalam 3 detik...`,
+    );
+    setLockedRedirectCountdown(3);
+
+    const interval = setInterval(() => {
+      setLockedRedirectCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          localStorage.removeItem("user");
+          localStorage.removeItem("rememberMe");
+          if (user?.id) {
+            sessionStorage.removeItem(`welcomeShown_${user.id}`);
+          }
+          window.location.href = "/";
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [userRole, roleLoading, user?.id]);
+
   // ✅ Loading state check
   const isLoading = loading || maintenanceLoading || roleLoading;
 
@@ -323,12 +353,31 @@ const ProtectedRoute = ({
             Aplikasi Ini Khusus TU
           </h2>
           <p
-            className={`text-sm sm:text-base mb-4 sm:mb-6 transition-colors ${
+            className={`text-sm sm:text-base mb-4 transition-colors ${
               darkMode ? "text-gray-400" : "text-gray-600"
             }`}>
-            Silakan gunakan aplikasi guru untuk mengakses fitur presensi, nilai,
-            dan jurnal Anda.
+            Silakan Gunakan Applikasi Untuk Guru.
           </p>
+          <p
+            className={`text-xs sm:text-sm mb-4 sm:mb-6 italic transition-colors ${
+              darkMode ? "text-gray-500" : "text-gray-500"
+            }`}>
+            Anda akan dialihkan otomatis ke halaman login dalam{" "}
+            {lockedRedirectCountdown} detik...
+          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem("user");
+              localStorage.removeItem("rememberMe");
+              window.location.href = "/";
+            }}
+            className={`w-full sm:w-auto px-6 py-2.5 sm:py-3 rounded-lg font-medium transition-all duration-200 touch-manipulation active:scale-95 ${
+              darkMode
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}>
+            Kembali ke Login Sekarang
+          </button>
         </div>
       </div>
     );
